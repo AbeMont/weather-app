@@ -1,5 +1,38 @@
+import { useState, useEffect } from "react";
 
 function App() {
+
+  const [weatherData, setWeatherData] = useState({});
+  const key = "fb339b44f4584cc5810225529252901";
+
+  useEffect(()=>{
+
+    function getInitialWeather() {
+        console.log('Fetch data from api');
+
+          // Find current location
+          navigator.geolocation.getCurrentPosition((e)=>{ 
+          const latitude = e.coords.latitude;
+          const longitude = e.coords.longitude;
+          console.log('coordinates: ', latitude, longitude);
+
+          async function getWeatherData(){
+            try {
+              const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${latitude},${longitude}`);
+              const data = await res.json();
+              setWeatherData(data);
+            } catch (error){
+              console.log(error)
+            }
+          }
+          getWeatherData();
+        });
+    }
+
+    getInitialWeather();
+
+  },[])
+
   return (
     <div className="container">
       <div className="row">
@@ -21,27 +54,27 @@ function App() {
 
           <div className="row justify-content-center">
             <div className="col-9">
-              <h5 className="mt-4 text-center p-1">Current weather in Leon Valley is</h5>
+              <h5 className="mt-4 text-center p-1">Current weather in {weatherData.location?.name} is</h5>
             </div>
           </div>
 
           <div className="d-flex flex-column justify-content-center mt-3 mb-2">
-            <h1 className="temperature text-center m-0">70<span>°F</span></h1>
-            <p className="temperature-description text-center m-0">Light rain</p>
+            <h1 className="temperature text-center m-0">{Math.round(weatherData.current?.temp_f)}<span>°F</span></h1>
+            <p className="temperature-description text-center m-0">{weatherData.current?.condition.text}</p>
           </div>
 
           <div className="conditions d-flex justify-content-around">
             <div className="d-flex gap-2">
               <span><i className="bi bi-water"></i></span>
               <div className="d-flex flex-column justify-content-center">
-                <p className="m-0">88%</p>
+                <p className="m-0">{weatherData.current?.humidity}%</p>
                 <p className="m-0 condition">Humidity</p>
               </div>
             </div>
             <div className="d-flex gap-2">
               <span><i className="bi bi-wind"></i></span>
               <div className="d-flex flex-column justify-content-center">
-                <p className="m-0">14 mph</p>
+                <p className="m-0">{Math.round(weatherData.current?.wind_mph)} mph</p>
                 <p className="m-0 condition">Wind Speed</p>
               </div>
             </div>
