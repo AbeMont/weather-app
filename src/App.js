@@ -4,6 +4,7 @@ function App() {
 
   const [weatherData, setWeatherData] = useState({});
   const [city, setCity] = useState('');
+  const [image, setImage] = useState('')
   const key = "fb339b44f4584cc5810225529252901";
 
     async function getWeatherData(query){
@@ -11,6 +12,7 @@ function App() {
         const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${query}`);
         const data = await res.json();
         setWeatherData(data);
+        weatherImage(data.current.condition.code);
       } catch (error){
         console.log(error)
       }
@@ -29,6 +31,26 @@ function App() {
     }
     getInitialWeather();
   },[]);
+
+  function weatherImage(code){
+    switch (code) {
+      case 1000 || 1009: 
+        setImage('clear');
+      break;
+      case 1003 || 1006: 
+        setImage('cloud');
+      break;
+      case 1183 || 1186 || 1192 || 1195 || 1240: 
+        setImage('rain');
+      break;
+      case 1030 || 1135: 
+        setImage('mist');
+      break;
+      default:
+        setImage('clear');
+      break;
+    }
+  }
 
   function handleCityInput(e){
     setCity(e.target.value);
@@ -58,7 +80,7 @@ function App() {
           </div>
 
           <div className="weather-img-container d-block text-center">
-            <img src="images/snow.png" alt="snow" className="weather-img"/>
+            <img src={`images/${image}.png`} alt={image} className="weather-img"/>
           </div>
 
           <div className="row justify-content-center">
