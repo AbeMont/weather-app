@@ -35,14 +35,14 @@ function App() {
               <span><i className="bi bi-water"></i></span>
               <div className="d-flex flex-column justify-content-center">
                 <p className="m-0">88%</p>
-                <p className="m-0 condition">Light Rain</p>
+                <p className="m-0 condition">Humidity</p>
               </div>
             </div>
             <div className="d-flex gap-2">
               <span><i className="bi bi-wind"></i></span>
               <div className="d-flex flex-column justify-content-center">
-                <p className="m-0">88%</p>
-                <p className="m-0 condition">Light Rain</p>
+                <p className="m-0">14 mph</p>
+                <p className="m-0 condition">Wind Speed</p>
               </div>
             </div>
           </div>
