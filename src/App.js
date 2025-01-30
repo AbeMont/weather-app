@@ -3,35 +3,40 @@ import { useState, useEffect } from "react";
 function App() {
 
   const [weatherData, setWeatherData] = useState({});
+  const [city, setCity] = useState('');
   const key = "fb339b44f4584cc5810225529252901";
+
+    async function getWeatherData(query){
+      try {
+        const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${query}`);
+        const data = await res.json();
+        setWeatherData(data);
+      } catch (error){
+        console.log(error)
+      }
+    }
 
   useEffect(()=>{
 
     function getInitialWeather() {
-        console.log('Fetch data from api');
-
-          // Find current location
-          navigator.geolocation.getCurrentPosition((e)=>{ 
-          const latitude = e.coords.latitude;
-          const longitude = e.coords.longitude;
-          console.log('coordinates: ', latitude, longitude);
-
-          async function getWeatherData(){
-            try {
-              const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${latitude},${longitude}`);
-              const data = await res.json();
-              setWeatherData(data);
-            } catch (error){
-              console.log(error)
-            }
-          }
-          getWeatherData();
-        });
+        // Get current location on initial page load
+        navigator.geolocation.getCurrentPosition((e)=>{ 
+        const latitude = e.coords.latitude;
+        const longitude = e.coords.longitude;
+        const coordinates = latitude + ',' + longitude
+        getWeatherData(coordinates);
+      });
     }
-
     getInitialWeather();
+  },[]);
 
-  },[])
+  function handleCityInput(e){
+    setCity(e.target.value);
+  }
+
+  function handleClickCity(){
+    getWeatherData(city)
+  }
 
   return (
     <div className="container">
@@ -42,8 +47,12 @@ function App() {
 
           <div className="input-container my-1 d-flex">
             <i className="bi bi-geo-alt-fill d-flex flex-column justify-content-center"></i>
-            <input type="text" className="form-control location-input border-0 px-0" id="city" placeholder="Enter your City"/>
-            <button className="btn">
+            <input type="text" 
+            className="form-control location-input border-0 px-0" 
+            id="city" 
+            placeholder="Enter your City"
+            onChange={(e) => handleCityInput(e)}/>
+            <button className="btn" onClick={handleClickCity}>
               <i className="bi bi-search"></i>
             </button>
           </div>
