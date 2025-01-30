@@ -6,15 +6,20 @@ function App() {
   const [city, setCity] = useState('');
   const [image, setImage] = useState('')
   const key = "fb339b44f4584cc5810225529252901";
+  const [error, setError] = useState('');
 
     async function getWeatherData(query){
       try {
         const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${query}`);
+        if(!res.ok) throw new Error("Something went wrong with fetching the weather");
+        setError('');
         const data = await res.json();
         setWeatherData(data);
         weatherImage(data.current.condition.code);
       } catch (error){
-        console.log(error)
+        console.log(error);
+        weatherImage(400);
+        setError(error);
       }
     }
 
@@ -45,6 +50,9 @@ function App() {
       break;
       case 1030 || 1135: 
         setImage('mist');
+      break;
+      case 400 || 404 || 500:
+        setImage('404');
       break;
       default:
         setImage('clear');
@@ -83,33 +91,38 @@ function App() {
             <img src={`images/${image}.png`} alt={image} className="weather-img"/>
           </div>
 
-          <div className="row justify-content-center">
-            <div className="col-9">
-              <h5 className="mt-4 text-center p-1">Current weather in {weatherData.location?.name} is</h5>
-            </div>
-          </div>
-
-          <div className="d-flex flex-column justify-content-center mt-3 mb-2">
-            <h1 className="temperature text-center m-0">{Math.round(weatherData.current?.temp_f)}<span>°F</span></h1>
-            <p className="temperature-description text-center m-0">{weatherData.current?.condition.text}</p>
-          </div>
-
-          <div className="conditions d-flex justify-content-around">
-            <div className="d-flex gap-2">
-              <span><i className="bi bi-water"></i></span>
-              <div className="d-flex flex-column justify-content-center">
-                <p className="m-0">{weatherData.current?.humidity}%</p>
-                <p className="m-0 condition">Humidity</p>
+          {error !== '' ? <h1 className="text-center">{`${error}`}</h1> : 
+          <>
+            <div className="row justify-content-center">
+              <div className="col-9">
+                <h5 className="mt-4 text-center p-1">Current weather in {weatherData.location?.name} is</h5>
               </div>
             </div>
-            <div className="d-flex gap-2">
-              <span><i className="bi bi-wind"></i></span>
-              <div className="d-flex flex-column justify-content-center">
-                <p className="m-0">{Math.round(weatherData.current?.wind_mph)} mph</p>
-                <p className="m-0 condition">Wind Speed</p>
+
+            <div className="d-flex flex-column justify-content-center mt-3 mb-2">
+              <h1 className="temperature text-center m-0">{Math.round(weatherData.current?.temp_f)}<span>°F</span></h1>
+              <p className="temperature-description text-center m-0">{weatherData.current?.condition.text}</p>
+            </div>
+
+            <div className="conditions d-flex justify-content-around">
+              <div className="d-flex gap-2">
+                <span><i className="bi bi-water"></i></span>
+                <div className="d-flex flex-column justify-content-center">
+                  <p className="m-0">{weatherData.current?.humidity}%</p>
+                  <p className="m-0 condition">Humidity</p>
+                </div>
+              </div>
+              <div className="d-flex gap-2">
+                <span><i className="bi bi-wind"></i></span>
+                <div className="d-flex flex-column justify-content-center">
+                  <p className="m-0">{Math.round(weatherData.current?.wind_mph)} mph</p>
+                  <p className="m-0 condition">Wind Speed</p>
+                </div>
               </div>
             </div>
-          </div>
+          </>
+          }
+
 
         </div>
       </div>
