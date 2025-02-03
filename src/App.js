@@ -12,9 +12,11 @@ function App() {
   const [code, setCode] = useState('')
   const [error, setError] = useState('');
   const key = "fb339b44f4584cc5810225529252901";
+  const [isLoading, setIsLoading] = useState(false);
 
     async function getWeatherData(query){
       try {
+        setIsLoading(true);
         const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${query}`);
 
         if(!res.ok) throw new Error("Something went wrong with fetching the weather");
@@ -28,6 +30,8 @@ function App() {
         console.log(error);
         setCode(400);
         setError(error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -62,11 +66,13 @@ function App() {
           <CityInput cityInputHandler={handleCityInput} clickCityHandler = {handleClickCity}/>
           <WeatherImage image={image} setImageHandler={setImage} code={code}/>
 
-          {error !== '' ? <h1 className="text-center">{`${error}`}</h1> : 
-          <>
-            <CurrentWeather weatherDataObj = {weatherData}/>
-            <WeatherConditions weatherDataObj = {weatherData}/>
-          </>
+          {error !== '' && <h1 className="text-center">{`${error}`}</h1> }
+          
+          { error === '' && isLoading === false &&
+            <>
+              <CurrentWeather weatherDataObj = {weatherData}/>
+              <WeatherConditions weatherDataObj = {weatherData}/>
+            </>
           }
 
         </div>
