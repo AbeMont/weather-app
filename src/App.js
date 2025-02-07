@@ -13,9 +13,24 @@ function App() {
   const [error, setError] = useState('');
   const key = "fb339b44f4584cc5810225529252901";
   const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState('');
 
-    async function getWeatherData(query){
+  useEffect(() => {
+    // Get current location on initial page load
+    navigator.geolocation.getCurrentPosition((e)=>{ 
+
+    const latitude = e.coords.latitude;
+    const longitude = e.coords.longitude;
+    const coordinates = latitude + ',' + longitude
+    setQuery(coordinates);
+
+  });
+  },[]);
+
+  useEffect(()=>{
+    async function getWeatherData(){
       try {
+
         setIsLoading(true);
         const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${query}`);
 
@@ -35,26 +50,15 @@ function App() {
       }
     }
 
-  useEffect(()=>{
-
-    function getInitialWeather() {
-        // Get current location on initial page load
-        navigator.geolocation.getCurrentPosition((e)=>{ 
-        const latitude = e.coords.latitude;
-        const longitude = e.coords.longitude;
-        const coordinates = latitude + ',' + longitude
-        getWeatherData(coordinates);
-      });
-    }
-    getInitialWeather();
-  },[]);
+    query &&  getWeatherData() 
+  },[query]);
 
   function handleCityInput(e){
     setCity(e.target.value);
   }
 
   function handleClickCity(){
-    getWeatherData(city)
+    setQuery(city);
   }
 
   return (
@@ -67,8 +71,7 @@ function App() {
           <WeatherImage image={image} setImageHandler={setImage} code={code}/>
 
           {error !== '' && <h1 className="text-center">{`${error}`}</h1> }
-          
-          { error === '' && isLoading === false &&
+          { (error === '' && isLoading === false) &&
             <>
               <CurrentWeather weatherDataObj = {weatherData}/>
               <WeatherConditions weatherDataObj = {weatherData}/>
