@@ -7,6 +7,7 @@ import WeatherConditions from "./components/WeatherConditions";
 function App() {
 
   const [weatherData, setWeatherData] = useState({});
+  console.log("RTest");
   const [city, setCity] = useState('');
   const [image, setImage] = useState('');
   const [code, setCode] = useState('')
