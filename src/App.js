@@ -19,18 +19,19 @@ function App() {
     // Get current location on initial page load
     navigator.geolocation.getCurrentPosition((e)=>{ 
 
-    const latitude = e.coords.latitude;
-    const longitude = e.coords.longitude;
-    const coordinates = latitude + ',' + longitude
-    setQuery(coordinates);
+      const latitude = e.coords.latitude;
+      const longitude = e.coords.longitude;
+      const coordinates = latitude + ',' + longitude
+      setQuery(coordinates);
 
-  });
+    });
   },[]);
 
   useEffect(()=>{
     async function getWeatherData(){
       try {
 
+        if(query === '') return;
         setIsLoading(true);
         const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=${key}&q=${query}`);
 
@@ -50,7 +51,7 @@ function App() {
       }
     }
 
-    query &&  getWeatherData() 
+    getWeatherData();
   },[query]);
 
   function handleCityInput(e){
